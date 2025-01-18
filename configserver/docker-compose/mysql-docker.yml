@@ -1,0 +1,82 @@
+services:
+  rabbit:
+    image: rabbitmq:4.0-management
+    container_name: rabbitmq
+    hostname: rabbitmq
+    networks:
+      - eazybank
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: rabbitmq-diagnostics check_port_connectivity
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+
+  accountsdb:
+    image: mysql:latest
+    container_name: accountsdb
+    ports:
+      - 3306:3306
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 10s
+      retries: 10
+      interval: 10s
+      start_period: 10s
+    volumes:
+      - accounts_data:/var/lib/mysql
+    networks:
+      - eazybank
+    environment:
+      MYSQL_DATABASE: accountsdb
+      MYSQL_ROOT_PASSWORD: root
+
+  loansdb:
+    image: mysql:latest
+    container_name: loansdb
+    ports:
+      - 3307:3306
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 10s
+      retries: 10
+      interval: 10s
+      start_period: 10s
+    volumes:
+      - loans_data:/var/lib/mysql
+    networks:
+      - eazybank
+    environment:
+      MYSQL_DATABASE: loansdb
+      MYSQL_ROOT_PASSWORD: root
+
+  cardsdb:
+    image: mysql:latest
+    container_name: cardsdb
+    ports:
+      - 3308:3306
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 10s
+      retries: 10
+      interval: 10s
+      start_period: 10s
+    volumes:
+      - cards_data:/var/lib/mysql
+    networks:
+      - eazybank
+    environment:
+      MYSQL_DATABASE: cardsdb
+      MYSQL_ROOT_PASSWORD: root
+
+volumes:
+  accounts_data:
+  loans_data:
+  cards_data:
+
+networks:
+  eazybank:
+    driver: "bridge"
