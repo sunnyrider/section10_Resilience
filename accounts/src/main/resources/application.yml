@@ -31,6 +31,10 @@ spring:
 #    show-sql: true
   config:
     import: "optional:configserver:http://localhost:8071/"
+  cloud:
+    openfeign:
+      circuitbreaker:
+        enabled: true
   rabbitmq:
     host: localhost
     port: 5672
@@ -81,4 +85,33 @@ logging:
     com:
       eazybytes:
         accounts: DEBUG
- 
+
+resilience4j.ratelimiter:
+  configs:
+    default:
+      timeoutDuration: 500
+      limitRefreshPeriod: 5000
+      limitForPeriod: 5
+
+resilience4j.retry:
+  configs:
+    default:
+      maxRetryAttempts: 3
+      waitDuration: 500
+      enableExponentialBackoff: true
+      exponentialBackoffMultiplier: 2
+#      ignoreExceptions:
+#        - java.lang.NullPointerException
+      retyExceptions:
+        - java.util.concurrent.TimeoutException
+
+# retyExceptions erstellt eine Whitelist; 
+# ignoreExceptions braucht deshalb nicht bestimmt zu werden.
+
+resilience4j.circuitbreaker:
+  configs:
+    default:
+      slidingWindowSize: 10
+      permittedNumberOfCallsInHalfOpenState: 2
+      failureRateThreshold: 50
+      waitDurationInOpenState: 10000

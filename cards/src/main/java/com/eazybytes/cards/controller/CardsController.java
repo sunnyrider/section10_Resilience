@@ -262,6 +262,7 @@ public class CardsController {
     )
     @GetMapping("/contact-info")
     public ResponseEntity<CardsContactInfoDto> getContactInfo() {
+    	logger.debug("Invoked Cards contact-info API");
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(cardsContactInfoDto);
